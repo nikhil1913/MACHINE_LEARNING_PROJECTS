@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Categorizer Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="blob shape-1"></div>
+        <div class="blob shape-2"></div>
+        <div class="blob shape-3"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Customer Categorizer <span class="highlight">AI</span></h1>
+            <p>Enter the customer's attributes below to instantly predict their cluster category using our state-of-the-art machine learning model.</p>
+        </header>
+
+        <div class="main-content">
+            <form id="prediction-form" class="glass-panel">
+                <div class="form-grid">
+                    <!-- Personal Info -->
+                    <div class="input-group">
+                        <label for="Age">Age</label>
+                        <input type="number" id="Age" name="Age" value="35" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Education">Education Level (0-4)</label>
+                        <input type="number" id="Education" name="Education" value="2" required min="0" max="4">
+                    </div>
+                    <div class="input-group">
+                        <label for="Marital_Status">Marital Status (0-1)</label>
+                        <input type="number" id="Marital_Status" name="Marital_Status" value="1" required min="0" max="1">
+                    </div>
+                    <div class="input-group">
+                        <label for="Parental_Status">Parental Status (0-1)</label>
+                        <input type="number" id="Parental_Status" name="Parental_Status" value="1" required min="0" max="1">
+                    </div>
+                    <div class="input-group">
+                        <label for="Children">Number of Children</label>
+                        <input type="number" id="Children" name="Children" value="1" required min="0">
+                    </div>
+                    
+                    <!-- Financials & Timeline -->
+                    <div class="input-group">
+                        <label for="Income">Yearly Income ($)</label>
+                        <input type="number" id="Income" name="Income" value="65000" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Total_Spending">Total Spending</label>
+                        <input type="number" id="Total_Spending" name="Total_Spending" value="1200" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Days_as_Customer">Days as Customer</label>
+                        <input type="number" id="Days_as_Customer" name="Days_as_Customer" value="2500" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Recency">Recency (days)</label>
+                        <input type="number" id="Recency" name="Recency" value="45" required>
+                    </div>
+
+                    <!-- Purchases by Category -->
+                    <div class="input-group">
+                        <label for="Wines">Wines Purchased</label>
+                        <input type="number" id="Wines" name="Wines" value="500" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Fruits">Fruits Purchased</label>
+                        <input type="number" id="Fruits" name="Fruits" value="50" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Meat">Meat Purchased</label>
+                        <input type="number" id="Meat" name="Meat" value="300" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Fish">Fish Purchased</label>
+                        <input type="number" id="Fish" name="Fish" value="60" required step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="Sweets">Sweets Purchased</label>
+                        <input type="number" id="Sweets" name="Sweets" value="30" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Gold">Gold Purchased</label>
+                        <input type="number" id="Gold" name="Gold" value="65" required step="0.1">
+                    </div>
+
+                    <!-- Platform Behaviors -->
+                    <div class="input-group">
+                        <label for="Web">Web Purchases</label>
+                        <input type="number" id="Web" name="Web" value="6" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Catalog">Catalog Purchases</label>
+                        <input type="number" id="Catalog" name="Catalog" value="3" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Store">Store Purchases</label>
+                        <input type="number" id="Store" name="Store" value="8" required step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="Discount_Purchases">Discount Purchases</label>
+                        <input type="number" id="Discount_Purchases" name="Discount_Purchases" value="2" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Total_Promo">Total Promo</label>
+                        <input type="number" id="Total_Promo" name="Total_Promo" value="1" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="NumWebVisitsMonth">Web Visits/Month</label>
+                        <input type="number" id="NumWebVisitsMonth" name="NumWebVisitsMonth" value="5" required>
+                    </div>
+                </div>
+
+                <button type="submit" id="submit-btn">
+                    <span>Predict Cluster</span>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </form>
+
+            <div id="result-container" class="glass-panel hidden">
+                <div class="result-content">
+                    <h2>Prediction Result</h2>
+                    <p>The model categorizes this customer into:</p>
+                    <div class="cluster-badge" id="cluster-value">Cluster <span id="cluster-num">--</span></div>
+                    <div class="cluster-label" id="cluster-label-text">--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

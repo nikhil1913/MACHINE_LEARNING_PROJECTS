@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bike Rental Prediction Dashboard</title>
+    <meta name="description" content="AI powered predictive dashboard for bike rentals.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <main class="dashboard">
+        <header class="dashboard-header">
+            <div class="logo">
+                <div class="icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"></circle><circle cx="18.5" cy="17.5" r="3.5"></circle><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3-3 4-3 2 3h2"></path></svg>
+                </div>
+                <h1>PedalPredict AI</h1>
+            </div>
+            <p>Predict future bike rentals instantly using our advanced Random Forest model.</p>
+        </header>
+
+        <section class="prediction-module">
+            <form id="prediction-form" class="glass-panel">
+                <div class="form-grid">
+                    
+                    <!-- Temporal Features -->
+                    <div class="form-group">
+                        <label for="yr">Year</label>
+                        <select id="yr" name="yr" required>
+                            <option value="0">2011</option>
+                            <option value="1">2012</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mnth">Month (1-12)</label>
+                        <input type="number" id="mnth" name="mnth" min="1" max="12" value="6" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hr">Hour of Day (0-23)</label>
+                        <input type="number" id="hr" name="hr" min="0" max="23" value="12" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weekday">Day of Week</label>
+                        <select id="weekday" name="weekday" required>
+                            <option value="0">Sunday</option>
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4" selected>Thursday</option>
+                            <option value="5">Friday</option>
+                            <option value="6">Saturday</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="workingday">Working Day</label>
+                        <select id="workingday" name="workingday" required>
+                            <option value="1" selected>Yes (1)</option>
+                            <option value="0">No (0)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="holiday">Holiday</label>
+                        <select id="holiday" name="holiday" required>
+                            <option value="0" selected>No (0)</option>
+                            <option value="1">Yes (1)</option>
+                        </select>
+                    </div>
+
+                    <!-- Weather Features -->
+                    <div class="form-group">
+                        <label for="weathersit">Weather Situation</label>
+                        <select id="weathersit" name="weathersit" required>
+                            <option value="1" selected>1 - Clear/Few clouds</option>
+                            <option value="2">2 - Mist/Cloudy</option>
+                            <option value="3">3 - Light Snow/Rain</option>
+                            <option value="4">4 - Heavy Rain/Ice Pellets</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="temp">Normalized Temp (0-1)</label>
+                        <input type="number" id="temp" name="temp" min="0" max="1" step="0.01" value="0.55" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="windspeed">Normalized Windspeed (0-1)</label>
+                        <input type="number" id="windspeed" name="windspeed" min="0" max="1" step="0.01" value="0.25" required>
+                    </div>
+
+                </div>
+
+                <div class="action-row">
+                    <button type="submit" id="submit-btn" class="primary-btn">
+                        <span class="btn-text">Generate Prediction</span>
+                        <span class="loader hidden"></span>
+                    </button>
+                </div>
+            </form>
+
+            <div id="result-container" class="result-panel glass-panel">
+                <h3>Predicted Hourly Rentals</h3>
+                <div class="result-value" id="prediction-result">--</div>
+                <p class="result-subtext">Based on historical patterns and current inputs</p>
+                <div id="error-message" class="error-text hidden"></div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>Powered by FastAPI & Scikit-Learn | Random Forest Regressor</p>
+        </footer>
+    </main>
+
+    <script>
+        const form = document.getElementById('prediction-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.querySelector('.btn-text');
+        const loader = document.querySelector('.loader');
+        const resultContainer = document.getElementById('result-container');
+        const predictionResult = document.getElementById('prediction-result');
+        const errorMessage = document.getElementById('error-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // UI Loading state
+            btnText.classList.add('hidden');
+            loader.classList.remove('hidden');
+            submitBtn.disabled = true;
+            resultContainer.classList.remove('hidden');
+            predictionResult.classList.add('pulse');
+            predictionResult.textContent = '...';
+            errorMessage.classList.add('hidden');
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Convert to correct data types
+            const payload = {
+                yr: parseInt(data.yr),
+                mnth: parseInt(data.mnth),
+                hr: parseInt(data.hr),
+                weekday: parseInt(data.weekday),
+                workingday: parseInt(data.workingday),
+                holiday: parseInt(data.holiday),
+                weathersit: parseInt(data.weathersit),
+                temp: parseFloat(data.temp),
+                windspeed: parseFloat(data.windspeed)
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server returned ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                // Success animate
+                setTimeout(() => {
+                    predictionResult.classList.remove('pulse');
+                    // Animate counter
+                    animateValue(predictionResult, 0, result.predicted_rentals, 1000);
+                }, 500);
+
+            } catch (error) {
+                predictionResult.classList.remove('pulse');
+                predictionResult.textContent = 'Error';
+                errorMessage.textContent = error.message || 'Failed to get prediction';
+                errorMessage.classList.remove('hidden');
+            } finally {
+                // UI Restore state
+                setTimeout(() => {
+                    btnText.classList.remove('hidden');
+                    loader.classList.add('hidden');
+                    submitBtn.disabled = false;
+                }, 500);
+            }
+        });
+
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                // easing out
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                obj.innerHTML = Math.floor(easeProgress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.innerHTML = end; // Ensure precise end value
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+    </script>
+</body>
+</html>

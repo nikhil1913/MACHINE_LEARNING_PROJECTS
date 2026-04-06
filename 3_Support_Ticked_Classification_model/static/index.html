@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Ticket Classifier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="background-orbs">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+    </div>
+    
+    <main class="container">
+        <header class="header">
+            <h1>Ticket Classifier AI</h1>
+            <p>Paste the content of your support ticket below. Our AI will automatically evaluate its urgency and assign the correct priority level.</p>
+        </header>
+
+        <section class="classifier-card">
+            <div class="input-group">
+                <label for="ticket-description">Ticket Description</label>
+                <textarea id="ticket-description" placeholder="E.g., Unable to access the production database due to an invalid password error. This is affecting all users..."></textarea>
+            </div>
+            
+            <button id="classify-btn" class="btn-primary">
+                <span class="btn-text">Analyze Ticket</span>
+                <span class="loader hidden"></span>
+            </button>
+        </section>
+
+        <section id="result-container" class="result-card hidden">
+            <h2>Priority Assessment</h2>
+            <div class="priority-badge" id="priority-badge">
+                <span class="priority-level" id="priority-text">--</span>
+            </div>
+            <p id="priority-desc" class="priority-desc"></p>
+        </section>
+    </main>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
